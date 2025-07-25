@@ -1,0 +1,10 @@
+{
+  "producto1": {
+    "nombre": "Remera Negra",
+    "precio": "7.12"
+  },
+  "producto2": {
+    "nombre": "Medias Negras",
+    "precio": "5.43"
+  }
+}

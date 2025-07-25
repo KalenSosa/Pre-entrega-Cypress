@@ -1,0 +1,21 @@
+{
+  "name": "curso_cypress",
+  "version": "1.0.0",
+  "main": "cypress.config.js",
+  "devDependencies": {
+    "cypress": "^14.5.2",
+    "cypress-xpath": "^2.0.1",
+    "mochawesome": "^7.1.3",
+    "mochawesome-merge": "^5.0.0",
+    "mochawesome-report-generator": "^6.2.0"
+  },
+  "scripts": {
+    "test": "npx cypress open --e2e -b electron",
+    "dev": "npx cypress open --e2e -b electron --config baseUrl=https://pushing-front.vercel.app",
+    "stage": "npx cypress open --e2e -b electron --config baseUrl=https://pushing-it.vercel.app"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
