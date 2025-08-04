@@ -10,18 +10,20 @@ module.exports = defineConfig({
     json: true,
   },
 
-  e2e: {
+ e2e: {
     baseUrl: 'https://pushing-it.vercel.app',
     watchForFileChanges: true,
     setupNodeEvents(on, config) {
+
     },
-    
-    //diferentes usuarios para roles
     env: {
-    //admin: {
-      "usuario": "pushingit",
-      "contraseña": "123456!",
-    },
+      usuario: "pushingit",
+      contraseña: "123456!"
+    }
 
   },
+
 });
+
+
+
