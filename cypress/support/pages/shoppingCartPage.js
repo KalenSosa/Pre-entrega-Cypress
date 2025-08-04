@@ -1,30 +1,30 @@
 export class ShoppingCartPage {
-    constructor() {
-        this.productoNombreCarrito = '#productName';     
-        this.productoPrecioCarrito = '#unitPrice';         
-        this.productoCantidadCarrito = '#productAmount';   
-        this.clickPrecioTotal = 'button:contains("Show total price")'; 
-        this.verificarPrecioTotal = '#price';               
-    }
-
-   verificarProductoYPrecio(nombreProducto, precioProducto) {
-    cy.contains('[data-cy="productName"]', nombreProducto).parents('.css-1bhbsny').find('[data-cy="unitPrice"]').should('contain.text', precioProducto);
-  }
-    
-
-   verificarCantidadProducto(nombreProducto, cantidadEsperada) {
-    cy.contains('[data-cy="productName"]', nombreProducto).parents('.css-1bhbsny').find('[data-cy="productAmount"]').should('have.text', cantidadEsperada);
+  constructor() {
+    this.productoNombreCarrito = '[data-cy="productName"]';
+    this.productoPrecioCarrito = '[data-cy="unitPrice"]';
+    this.productoCantidadCarrito = '[data-cy="productAmount"]';
+    this.productoTotalCarrito = '[data-cy="totalPrice"]';
+    this.botonMostrarPrecioTotal = 'button:contains("Show total price")';
+    this.precioTotal = '#price';
   }
 
-  verificarTotalProducto(nombreProducto, totalEsperado) {
-  cy.contains('[data-cy="productName"]', nombreProducto).parents('.css-1bhbsny').find('[data-cy="totalPrice"]').should('contain.text', totalEsperado);
-}
+  obtenerProductoYPrecio(nombreProducto) {
+    return cy.contains(this.productoNombreCarrito, nombreProducto).parents('.css-1bhbsny').find(this.productoPrecioCarrito);
+  }
 
-    clickTotalPrice() {
-        cy.get(this.clickPrecioTotal).click();
-    }
+  obtenerCantidadProducto(nombreProducto) {
+    return cy.contains(this.productoNombreCarrito, nombreProducto).parents('.css-1bhbsny').find(this.productoCantidadCarrito);
+  }
 
-    verificarPrecioTotalAcumulado(precioTotal) {
-        cy.get(this.verificarPrecioTotal).should('have.text', precioTotal);
-    }
+  obtenerTotalProducto(nombreProducto) {
+    return cy.contains(this.productoNombreCarrito, nombreProducto).parents('.css-1bhbsny').find(this.productoTotalCarrito);
+  }
+
+  clickTotalPrice() {
+    cy.get(this.botonMostrarPrecioTotal).click();
+  }
+
+  obtenerPrecioTotalAcumulado() {
+    return cy.get(this.precioTotal);
+  }
 }

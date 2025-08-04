@@ -2,62 +2,72 @@ import { LoginPage } from "../support/pages/loginPage";
 import { ProductsPage } from "../support/pages/productsPage";
 import { ShoppingCartPage } from "../support/pages/shoppingCartPage";
 
-describe('pre entrega', () => {
+describe("pre entrega", () => {
+  let productos;
+  const loginPage = new LoginPage();
+  const productsPage = new ProductsPage();
+  const cartPage = new ShoppingCartPage();
 
-    let productos;
-    let login;
-    const loginPage = new LoginPage();
-    const productsPage = new ProductsPage();
-    const cartPage = new ShoppingCartPage();
-
-    before(() => {
-        cy.fixture('login').then((datosLogin) => {
-            login = datosLogin;
-        });
-
-        cy.fixture('productos').then((datosProductos) => {
-            productos = datosProductos;
-        });
+  before(() => {
+    cy.fixture("productos").then((datosProductos) => {
+      productos = datosProductos;
     });
+  });
 
-    beforeEach(() => {
-        cy.visit('/');
-        loginPage.ClickRegisterToggle(); 
-        loginPage.escribirUsuario(login.Login.usuario); 
-        loginPage.escribirContraseña(login.Login.clave); 
-        loginPage.clickBotonLogin(); 
-    });
+  beforeEach(() => {
+    cy.visit("/");
+    loginPage.ClickRegisterToggle();
+    loginPage.escribirUsuario(Cypress.env("usuario"));
+    loginPage.escribirContraseña(Cypress.env("contraseña"));
+    loginPage.clickBotonLogin();
+  });
+
+  it("Se agregan productos, se validan datos y verifica total", () => {
+    //modulo "Online Shop"
+    productsPage.clickOnlineShopLink();
+
+    // Elegir 2 productos y añadirlos al carrito.
+
+    // Producto 1 (2 unidades)
+    productsPage.agregarProducto(productos.producto1.nombre);
+    productsPage.obtenerModalProductoAgregado()
+      .should("be.visible").and("contain.text",`${productos.producto1.nombre} has been added to the shopping cart`);
+    productsPage.cerrarModalProductoAgregado();
+
+    productsPage.agregarProducto(productos.producto1.nombre);
+    productsPage.obtenerModalProductoAgregado()
+      .should("be.visible").and("contain.text",`${productos.producto1.nombre} has been added to the shopping cart`);
+    productsPage.cerrarModalProductoAgregado();
+
+    cy.get(productsPage.modalProductoAgregado).should("not.exist");
+
+    // Producto 2 (2 unidades)
+    productsPage.agregarProducto(productos.producto2.nombre);
+    productsPage.obtenerModalProductoAgregado()
+      .should("be.visible").and("contain.text",`${productos.producto2.nombre} has been added to the shopping cart`);
+    productsPage.cerrarModalProductoAgregado();
+
+    productsPage.agregarProducto(productos.producto2.nombre);
+    productsPage.obtenerModalProductoAgregado()
+      .should("be.visible").and("contain.text",`${productos.producto2.nombre} has been added to the shopping cart`);
+    productsPage.cerrarModalProductoAgregado();
     
-    it('Se agregan productos, se validan datos y verifica total', () => {
+    cy.get(productsPage.modalProductoAgregado).should("not.exist");
 
-        //modulo "Online Shop"
-        productsPage.clickOnlineShopLink();
+    //Ir al carrito de compras
+    productsPage.clickShoppingCart();
 
-        // Elegir 2 productos y añadirlos al carrito. 
-        productsPage.agregarProducto(productos.producto1.nombre); 
-        productsPage.verificarProductoAgregadoModal(productos.producto1.nombre);
-        productsPage.cerrarModalProductoAgregado(); 
+    // Verificar cantidad, nombre y precio de los dos productos en el carrito.
+    cartPage.obtenerCantidadProducto(productos.producto1.nombre).should("have.text", "2");
+    cartPage.obtenerCantidadProducto(productos.producto2.nombre).should("have.text", "2");
 
-        productsPage.agregarProducto(productos.producto2.nombre); 
-        productsPage.verificarProductoAgregadoModal(productos.producto2.nombre);
-        productsPage.cerrarModalProductoAgregado(); 
+    // Hacer click en "Show total price" y verificar el precio acumulado de los productos
 
-        productsPage.clickShoppingCart(); 
+    const totalEsperado =
+      (productos.producto1.precio * productos.producto1.quantity +
+       productos.producto2.precio * productos.producto2.quantity) /100;
 
-        // Verificar cantidad, nombre y precio de los dos productos en el carrito.
-        cartPage.verificarCantidadProducto(productos.producto1.nombre, '1'); 
-        cartPage.verificarProductoYPrecio(productos.producto1.nombre, productos.producto1.precio); 
-        cartPage.verificarTotalProducto(productos.producto1.nombre, productos.producto1.precio);
-        
-        cartPage.verificarCantidadProducto(productos.producto2.nombre, '1'); 
-        cartPage.verificarProductoYPrecio(productos.producto2.nombre, productos.producto2.precio);
-        cartPage.verificarTotalProducto(productos.producto2.nombre, productos.producto2.precio);
-
-        // Hacer click en "Show total price" y verificar el precio acumulado de los 2 productos 
-        const totalEsperado = (Number(productos.producto1.precio) + Number(productos.producto2.precio)).toFixed(2);
-        cartPage.clickTotalPrice();
-        cartPage.verificarPrecioTotalAcumulado(totalEsperado);
-
-    });
-
+     cartPage.clickTotalPrice();
+     cartPage.obtenerPrecioTotalAcumulado().should("have.text", totalEsperado.toFixed(2));
+  });
 });
